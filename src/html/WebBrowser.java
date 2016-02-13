@@ -1,6 +1,12 @@
 package html;
 
 import java.awt.BorderLayout;
+import java.awt.Point;
+import java.awt.ScrollPane;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -8,6 +14,8 @@ import java.util.logging.Level;
 import javax.swing.*;
 
 import com.teamdev.jxbrowser.chromium.Browser;
+import com.teamdev.jxbrowser.chromium.ContextMenuHandler;
+import com.teamdev.jxbrowser.chromium.ContextMenuParams;
 import com.teamdev.jxbrowser.chromium.LoggerProvider;
 import com.teamdev.jxbrowser.chromium.dom.By;
 import com.teamdev.jxbrowser.chromium.dom.DOMDocument;
@@ -24,8 +32,264 @@ import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 
 
 
-public class WebBrowser extends JFrame {
+public class WebBrowser extends JPanel {
+	Browser browser;
+	BrowserView view;
 	DOMDocument document;
+	ScrollPane scroll;
+	JButton reload, back, forward;
+	JTextField url;
+	
+	public WebBrowser(){
+		JPopupMenu.setDefaultLightWeightPopupEnabled(false);
+		setBounds(0,0,704,700);
+		setLayout(null);
+		browser = new Browser();
+		view = new BrowserView(browser);
+		
+		
+		/******* Scroll ********/
+		
+		scroll = new ScrollPane();
+		scroll.setLocation(4, 31);
+		scroll.setSize(690,673);
+		scroll.add(view);
+		add(scroll);
+		
+		/******** Text Field with URL ********/
+		
+		url = new JTextField("www.google.it");
+		url.setBounds(111, 0, 581, 30);
+		url.addKeyListener(new KeyAdapter(){
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode() == KeyEvent.VK_ENTER){
+//					System.out.println("premuto enter");
+					browser.loadURL(url.getText());
+				}
+			}
+			
+		});
+		add(url);
+		
+		/******** Buttons ********/
+		
+		ImageIcon back_img = new ImageIcon("img/back.png");
+		ImageIcon forward_img = new ImageIcon("img/forward.png");
+		ImageIcon refresh_img = new ImageIcon("img/refresh.png");
+		
+		reload = new JButton(refresh_img);
+		reload.setBounds(75,0,30,30);
+		reload.setOpaque(false);
+		reload.setContentAreaFilled(false);
+		add(reload);
+		
+		forward = new JButton(forward_img);
+		forward.setOpaque(false);
+		forward.setContentAreaFilled(false);
+		forward.setBounds(39, 0, 30, 30);
+		add(forward);
+		
+		back = new JButton(back_img);
+		back.setBounds(5, 0, 30, 30);
+		back.setOpaque(false);
+		back.setContentAreaFilled(false);
+		add(back);
+		
+		forward.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (browser.canGoForward())
+					browser.goForward();
+			}
+		});
+		back.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (browser.canGoBack())
+					browser.goBack();
+			}
+		});
+		reload.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				browser.reload();
+			}
+			
+		});
+		
+		/******** Load Url and create onLoadListener ********/
+		
+		
+		browser.loadURL(url.getText());
+		browser.addLoadListener(new LoadAdapter(){
+			
+			@Override
+			public void onProvisionalLoadingFrame(ProvisionalLoadingEvent arg0) {
+				// TODO Auto-generated method stub
+//				System.out.println("sto caricando");
+				url.setText(browser.getURL());
+				document = browser.getDocument();
+			}
+		});
+		browser.setContextMenuHandler(new MyContextMenuHandler(view, this));
+		
+	}
+	
+	/******** Return a list with prices taken from grid page ********/
+	
+	public LinkedList<Integer> getPriceGrid(){
+		
+		LinkedList<Integer> prices = new LinkedList<>();
+		
+		List<DOMElement> price_el = document.findElements(By.className("table-price small"));
+		for (DOMElement p: price_el)
+			prices.add(Integer.parseInt(p.getTextContent().split("€ ")[1]));
+		
+		return prices;
+		
+	}
+	
+	/******** Return a list with prices taken from graphic page ********/
+	
+	public LinkedList<Integer> getPriceGraphic(){
+		LinkedList<Integer> prices = new LinkedList<>();
+		
+		List<DOMElement> price = document.findElements(By.className("primary "));
+    	for (DOMElement l:price)
+    		prices.add(Integer.parseInt(l.getTextContent().split("€ ")[1]));
+		
+		
+		return prices;		
+	}
+	
+	/******* Get prices from different month, switch between graphic layout and grid layout ********/
+	
+	public LinkedList<LinkedList> getPrices(int howMany, int isGrid){
+		
+		LinkedList<LinkedList> prices = new LinkedList<>();
+		
+		switch(isGrid){
+		case 0: //Is graphic
+			for (int i = 0; i<howMany;i++){
+				try {
+	        		Thread.sleep(500);
+	        	} catch (InterruptedException e) {
+	        		// TODO Auto-generated catch block
+	        		e.printStackTrace();
+	        	}
+				LinkedList<Integer> price = getPriceGraphic();
+				prices.add(price);
+				
+				//Get next button and click it
+				
+				List<DOMElement> next = document.findElements(By.className("next"));
+				next.get(1).click();
+				
+			}
+			
+			break;
+		case 1: //Is grid
+			
+			for (int i = 0; i<howMany;i++){
+				try {
+	        		Thread.sleep(500);
+	        	} catch (InterruptedException e) {
+	        		// TODO Auto-generated catch block
+	        		e.printStackTrace();
+	        	}
+				LinkedList<Integer> price = getPriceGrid();
+				prices.add(price);
+				
+				//Click next month
+				
+				DOMElement btn_n = document.findElement(By.className("month-selector-next "));
+	        	btn_n.click();
+				
+			}
+			break;
+		}
+		
+		return prices;
+	}
+
+	/******** Class that handle right click ********/
+	
+	public static class MyContextMenuHandler implements ContextMenuHandler{
+		private JComponent component;
+		private WebBrowser wb;
+		
+		MyContextMenuHandler(JComponent parentComponent, WebBrowser wb){
+			this.component = parentComponent;
+			this.wb = wb;
+		}
+		@Override
+		public void showContextMenu(ContextMenuParams arg0) {
+			// TODO Auto-generated method stub
+			JPopupMenu popMenu = new JPopupMenu();
+			Browser browser = arg0.getBrowser();
+			
+			popMenu.add(createMenuItem("Print link", new Runnable(){
+				public void run() {
+					System.out.println(browser.getURL());
+				}
+			}));
+			
+			popMenu.add(createMenuItem("Grab",new Runnable(){
+				public void run(){
+					System.out.println("[!] -Start grabbing prices! ...");
+					LinkedList<LinkedList> price = wb.getPrices(3,1);
+					for (LinkedList<Integer> l :price)
+						for (int i: l)
+							System.out.println(i);
+					System.out.println("[!] -Stopped grabbing prices! ...");
+				}
+			}));
+
+			popMenu.add(createMenuItem("Reload", new Runnable() {
+				public void run() {
+					browser.reload();
+				}
+			}));
+			
+			if (browser.canGoBack())
+			popMenu.add(createMenuItem("Go back", new Runnable(){
+				public void run(){
+					browser.goBack();
+				}
+			}));
+			
+			if (browser.canGoForward())
+				popMenu.add(createMenuItem("Go Forward", new Runnable(){
+					public void run(){
+						browser.goForward();
+					}
+				}));
+			
+			Point location = arg0.getLocation();
+			SwingUtilities.invokeLater(new Runnable() {
+	            public void run() {
+	                popMenu.show(component, location.x, location.y);
+	            }
+	        });
+		}
+		private static JMenuItem createMenuItem(String title, final Runnable action) {
+	         JMenuItem reloadMenuItem = new JMenuItem(title);
+	         reloadMenuItem.addActionListener(new ActionListener() {
+	             public void actionPerformed(ActionEvent e) {
+	                 action.run();
+	             }
+	         });
+	         return reloadMenuItem;
+	     }
+	}
+}
+
+
+
+
+	/*DOMDocument document;
 	boolean collect, finish = false;
 	LinkedList<LinkedList> prices;
 	public static Browser browser;
@@ -228,3 +492,4 @@ public class WebBrowser extends JFrame {
 	
 	
 }
+*/

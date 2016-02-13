@@ -1,6 +1,10 @@
 package html;
 
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import javax.swing.JTextPane;
@@ -18,12 +22,15 @@ public class Database {
 			//STATMENT
 //			System.out.println("Creating statment...");
 			PreparedStatement st = conn.prepareStatement("insert into flight"
-					+ "(id,departure,arrive,price,date)"
-					+ "values (NULL,?,?,?,?)");
+					+ "(id,departure,arrive,price,date,log)"
+					+ "values (NULL,?,?,?,?,?)");
 			st.setString(1, departure);
 			st.setString(2, arrive);
 			st.setInt(3, price);
 			st.setString(4, date);
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+			String log =  LocalDateTime.now().format(formatter);
+			st.setString(5, log);
 //			System.out.println("Executing query...");
 			st.executeUpdate();
 //			System.out.println("Inserted correctly!");
@@ -39,10 +46,12 @@ public class Database {
 		try {
 			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/flights","root","rotfl");
 			Statement st = conn.createStatement();
-			String pricee = "SELECT price FROM fligth WHERE date = '"+date+"' AND arrive = '"+arrive
-					+"' AND departure = '"+departure+"'";
+			
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM--yyyy HH:mm");
+			String log =  LocalDateTime.now().format(formatter);
+			
 			String sql = "UPDATE flight SET price = '"+price+"' WHERE date = '"+date+"' AND arrive = '"+arrive
-					+"' AND departure = '"+departure+"'";
+					+"' AND departure = '"+departure+"' AND log ='"+log+"'";
 			st.executeUpdate(sql);
 			conn.close();
 			
@@ -280,10 +289,12 @@ public class Database {
 		}
 		
 	}*/
+	///INUTILE
 	public static int getMin(String[] s) {
 		// TODO Auto-generated method stub
 		return Integer.parseInt(s[s.length-1]);
 	}
+	
 	public static Flight[] searchAR(String departure, String arrive, String date, int days){
 		int min = 10000;
 		ArrayList<Flight> arr = new ArrayList<Flight>();

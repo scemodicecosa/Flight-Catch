@@ -9,6 +9,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -45,15 +47,11 @@ public class HtlmParse {
 		String s = "londra -> roma, 35€, 2016-02-01";
 		Flight f2 = new Flight(s);
 //		LaunchB();
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-		} catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
-			System.out.println("CASA");
-			e1.printStackTrace();
-		}
-		Connection conn;
-		try {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+		String log =  LocalDateTime.now().format(formatter);
+		System.out.println(log);
+		Database.insert("amsterdam", "roma", 10, "oggi");
+		/*try {
 			
 			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/flights","root","rotfl");
 			Statement st = conn.createStatement();
@@ -65,6 +63,7 @@ public class HtlmParse {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		*/
 		System.out.println(Utils.stringDate(1, 4, 2016));
 		
 		System.out.println(f2.toString());

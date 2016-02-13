@@ -16,6 +16,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class Utils {
+	
+	///COMPLETAMENTE INUTILE
 	public static void downloadData(String url){
 		try{
 		File file = new File ("/home/leonardo/Scrivania/skyscann/");
@@ -36,6 +38,8 @@ public class Utils {
 			System.out.println(e);
 		}
 	}
+	
+	////COMPLETAMENTE INUTILE
 	public static int[] getPrice(String path){
 		int [] month = new int [31];
 		int count = 0;
@@ -62,6 +66,8 @@ public class Utils {
 
 		return month;
 	}
+	
+	
 	public static String createUrl(String departure, String arrive, String month){
 		Destinations arr = new Destinations(arrive);
 		Destinations dep = new Destinations(departure);
@@ -73,6 +79,7 @@ public class Utils {
 		return s;
 	}
 	
+	///INUTILE
 	public static Date newDate(int day, int month, int year){
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.YEAR, year);
@@ -83,6 +90,8 @@ public class Utils {
 		return date;
 		
 	}
+	
+	///INUTILE
 	public static Date newDate(String d){
 		String[] s = d.split("-");
 		Calendar cal = Calendar.getInstance();
@@ -94,6 +103,7 @@ public class Utils {
 		return date;
 		
 	}
+	
 	public static String toUrlDate(String date){
 		String[] s = date.split("-");
 		String da = s[2].substring(2, 4)+s[1]+s[0];
@@ -111,6 +121,9 @@ public class Utils {
 		return s;
 		
 	}
+	
+	
+	///COMPLETAMENTE INUTILE
 	public static void openPage(String url){
 		Runtime runtime = Runtime.getRuntime();
     	try {
@@ -120,11 +133,14 @@ public class Utils {
 			e.printStackTrace();
 		}
 	}
+	
+	
 	public static int extractPrice(String s){
 		if (s.length()<5)
 			return 0;
 		return Integer.parseInt(s.substring(s.indexOf(", ")+2, s.indexOf("€,")));
 	}
+	
 	public static String nextMonth(String s){
 		if (s.length()!=7)
 			return s;

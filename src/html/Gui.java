@@ -3,6 +3,7 @@ package html;
 import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.ScrollPane;
 
 import javax.swing.JFrame;
@@ -26,6 +27,7 @@ import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
@@ -34,6 +36,8 @@ import javax.swing.table.TableColumn;
 import org.jsoup.nodes.Element;
 
 import com.teamdev.jxbrowser.chromium.Browser;
+import com.teamdev.jxbrowser.chromium.ContextMenuHandler;
+import com.teamdev.jxbrowser.chromium.ContextMenuParams;
 import com.teamdev.jxbrowser.chromium.LoggerProvider;
 import com.teamdev.jxbrowser.chromium.events.FailLoadingEvent;
 import com.teamdev.jxbrowser.chromium.events.FinishLoadingEvent;
@@ -48,9 +52,12 @@ import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 import javax.swing.JTextArea;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JSpinner;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.UIManager;
 import javax.swing.JCheckBox;
 import java.awt.event.ItemListener;
@@ -77,8 +84,9 @@ public class Gui {
 	private JCheckBox chckbxAr;
 	private JTable table;
 	private DefaultTableModel model;
-	public Browser browserOne;
+	public WebBrowser wb;
 	public JTabbedPane tabbedPane;
+	public Setting setting;
 	//	private JButton btnSearch;
 	/**
 	 * Launch the application.
@@ -136,97 +144,14 @@ public class Gui {
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBounds(0, 0, 704, 700);
 		window.getContentPane().add(tabbedPane);
+		
 		JPanel panel = new JPanel();
+		wb = new WebBrowser();
+		setting = new Setting(wb, tabbedPane);
 		
 		tabbedPane.addTab("Search" ,panel);
-		tabbedPane.addTab("Settings",new Setting());
-//		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		
-		
-		
-		/****************************PANEL BROWSER****************************************/
-		
-		browserOne = new Browser();
-		JPanel p = new JPanel();
-		p.setSize(704,700);
-		p.setLayout(null);
-		JTextField url = new JTextField("http://www.google.it");
-		url.setBounds(122, 0, 611, 30);
-		url.addKeyListener(new KeyAdapter(){
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if(e.getKeyCode() == KeyEvent.VK_ENTER){
-					System.out.println("premuto enter");
-					browserOne.loadURL(url.getText());
-				}
-			}
-			
-		});
-		p.add(url , BorderLayout.NORTH);
-		ImageIcon back_img = new ImageIcon("img/back.png");
-		ImageIcon forward_img = new ImageIcon("img/forward.png");
-		ImageIcon refresh_img = new ImageIcon("img/refresh.png");
-		
-		JButton reload = new JButton(refresh_img);
-		reload.setBounds(75,0,30,30);
-		reload.setOpaque(false);
-		reload.setContentAreaFilled(false);
-		p.add(reload);
-		
-		JButton forward = new JButton(forward_img);
-		forward.setOpaque(false);
-		forward.setContentAreaFilled(false);
-		forward.setBounds(39, 0, 30, 30);
-		p.add(forward);
-		
-		JButton back = new JButton(back_img);
-		back.setBounds(5, 0, 30, 30);
-		back.setOpaque(false);
-		back.setContentAreaFilled(false);
-		p.add(back);
-		
-		forward.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (browserOne.canGoForward())
-					browserOne.goForward();
-			}
-		});
-		back.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (browserOne.canGoBack())
-					browserOne.goBack();
-			}
-		});
-		reload.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				browserOne.reload();
-			}
-			
-		});
-		
-		ScrollPane s = new ScrollPane();
-		s.setLocation(3, 30);
-		s.setSize(704,673);
-		s.add(new BrowserView(browserOne));
-		p.add(s);
-		tabbedPane.addTab("Browser", p);
-		browserOne.loadURL(url.getText());
-		browserOne.addLoadListener(new LoadAdapter(){
-			
-			@Override
-			public void onProvisionalLoadingFrame(ProvisionalLoadingEvent arg0) {
-				// TODO Auto-generated method stub
-//				System.out.println("sto caricando");
-				url.setText(browserOne.getURL());
-			}
-		});
-		
-		
-		/************************FINE PANEL BROWSER**************************/
+		tabbedPane.addTab("Settings",setting);
+		tabbedPane.addTab("Browser", wb);
 		
 		
 		
@@ -278,18 +203,14 @@ public class Gui {
 		JButton btnClean = new JButton("Clean");
 		btnClean.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		btnClean.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-
-//				listModel.removeAllElements();
 				table.removeAll();
 				for (int i = model.getRowCount() -1; i >= 0;i--)
 					model.removeRow(i);
+				tabbedPane.setSelectedIndex(2);
+				wb.browser.loadURL("it.wikipedia.org");
 			}
 		});
+		
 		btnClean.setBounds(500, 103, 63, 27);
 		panel.add(btnClean);
 
@@ -481,7 +402,9 @@ public class Gui {
 					String arrive = (String) model.getValueAt(table.getSelectedRow(), 1);
 					String date = (String) model.getValueAt(table.getSelectedRow(), 3);
 					String url = Utils.getSingleUrl(departure, arrive, date);
-					WebBrowser w = new WebBrowser(url);
+					tabbedPane.setSelectedIndex(2);
+					wb.browser.loadURL(url);
+//					WebBrowser w = new WebBrowser(url);
 					//Utils.openPage(url);
 				}
 				list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -501,6 +424,9 @@ public class Gui {
 		window.setLocationRelativeTo(null);
 
 	}
+	
+	
+	
 	public static boolean isZero(int[] price){
 		int j = 0;
 		for (int i:price){
