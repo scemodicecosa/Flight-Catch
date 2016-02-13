@@ -27,6 +27,7 @@ public class newframe extends JFrame {
 			}
 		});
 	}
+	////ROBA NUOVA AGGIUNTA
 
 	/**
 	 * Create the frame.
