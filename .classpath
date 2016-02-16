@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="lib/jxbrowser-6.1.jar"/>
 	<classpathentry kind="lib" path="lib/jxbrowser-linux64-6.1.jar"/>
 	<classpathentry kind="lib" path="lib/license.jar"/>
+	<classpathentry kind="lib" path="/root/Scaricati/swingx-all-1.6.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
