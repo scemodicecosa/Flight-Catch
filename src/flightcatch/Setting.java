@@ -133,12 +133,12 @@ public class Setting extends JPanel {
 						while(wb.browser.isLoading()){
 						}
 
-						System.out.println("[!] - Page Loaded "+arrive );
+						System.out.println("[!] - Page Loaded "+departure +"-"+arrive );
 						System.out.println("[!] - Start Grabbing Prices");
-
+						long start = System.currentTimeMillis();
 						LinkedList<LinkedList> price = wb.getGoogle(ndayBox.getSelectedIndex()+1);//wb.getPrices(ndayBox.getSelectedIndex()+1 ,1);
-
-						System.out.println("[!] - Stop Grabbing Prices");
+						long end = System.currentTimeMillis();
+						System.out.println("[!] - Price Grabbed In " +(end-start)+"ms");
 						int m = monthBox.getSelectedIndex()+1;
 						for (LinkedList<Integer> l :price){
 							System.out.println("[i] - Prices of month "+ m);
@@ -147,22 +147,25 @@ public class Setting extends JPanel {
 							int max = Utils.howManyDays(m);
 							for(int i = 0;i<max;i++){
 								String date = Utils.stringDate(day,m,2016);
+								String log = "[!] - Price Not Changed";
 								int pr = l.get(i);
 								//if is not in database, add
 								
 								if (!Database.isIN(departure, arrive, date)){
 									Database.insert(departure, arrive, pr, date);
-									System.out.println("[!] - Insert Price");
+//									System.out.println("[!] - First Insert Price");
+									log = "[!] - First Insert Price";
 								}
 								else{
 									//If different price, update
 									if (Database.getPrice(departure, arrive, date) != pr){
-										System.out.println("[!] - Update Price");
+//										System.out.println("[!] - Update Price");
+										log = "[!] - Update Price";
 										Database.update(departure, arrive, pr, date);
 									}
 									
 								}
-								System.out.println("Price from "+ date+l.get(i)+ " €");
+								System.out.println(log+" of "+ date+" "+l.get(i)+ " €");
 								day++;
 							}
 							m++;

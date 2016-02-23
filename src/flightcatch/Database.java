@@ -48,11 +48,11 @@ public class Database {
 			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/flights","root","rotfl");
 			Statement st = conn.createStatement();
 			
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM--yyyy HH:mm");
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 			String log =  LocalDateTime.now().format(formatter);
 			
-			String sql = "UPDATE flight SET price = '"+price+"' WHERE date = '"+date+"' AND arrive = '"+arrive
-					+"' AND departure = '"+departure+"' AND log ='"+log+"'";
+			String sql = "UPDATE flight SET price = '"+price+"' , log = '"+log+"' WHERE date = '"+date+"' AND arrive = '"+arrive
+					+"' AND departure = '"+departure+"'";
 			st.executeUpdate(sql);
 			conn.close();
 			

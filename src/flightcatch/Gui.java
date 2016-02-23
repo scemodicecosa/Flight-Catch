@@ -246,6 +246,10 @@ public class Gui {
 		btnSearch.setContentAreaFilled(false);
 		btnSearch.setBorderPainted(false);
 		btnSearch.setBorder(null);
+		
+		
+		/******** SEARCH LISTENER ********/
+		
 		btnSearch.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -265,12 +269,13 @@ public class Gui {
 				if (departure.equals(""))
 					departure = null;
 				if (dayBox.getSelectedItem().equals("Always")){
-					String[] dates = date.split("-");
-					date = dates[1]+"-"+dates[2];
+					date = date.substring(3);//dates[1]+"-"+dates[2];
 
 				}
-				
+
 				if (chckbxAr.isSelected()){
+//					date = date.substring(3);
+					System.out.println(date);
 					Flight[] s = Database.searchAR(departure, arrive, date, Integer.parseInt(textField.getText()));
 					for(int i = 0; i<s.length;i++){
 						Object[] o = new Object[]{ s[i].getDeparture(),s[i].getArrive(),
@@ -278,7 +283,7 @@ public class Gui {
 						};
 						model.addRow(o);
 						System.out.println("added");
-						}
+					}
 				}
 				else{
 
@@ -287,9 +292,9 @@ public class Gui {
 						Price p = new Price(s);
 						min = p.getMin();
 						for(Flight f:s){
-							
+
 							model.addRow(f.getObject());
-//							
+							//							
 						}
 						System.out.println("DONE");
 
@@ -300,9 +305,9 @@ public class Gui {
 						Flight[] s = Database.search(departure, arrive, date);
 						System.out.println("dovremmo essere qui "+date);
 						for(Flight f: s){
-							
+
 							model.addRow(f.getObject());
-							
+
 						}
 
 					}

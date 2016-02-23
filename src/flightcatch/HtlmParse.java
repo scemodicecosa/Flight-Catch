@@ -43,6 +43,8 @@ import org.jsoup.select.Elements;
 
 public class HtlmParse {
 	public static void main(String[] safsda){
+		Database.update("roma", "barcellona", 47, Utils.stringDate(1, 3, 2016));
+//		System.out.println(Calendar.month.values()[2]);
 //		Flight f = new Flight("londra", "roma", 34, "2016-01-02");
 //		String s = "londra -> roma, 35€, 2016-02-01";
 //		Flight f2 = new Flight(s);
@@ -63,7 +65,7 @@ public class HtlmParse {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		*/
+		
 		System.out.println(Utils.createGoogleURL("Roma", "amsterdam", "03"));
 		System.out.println(Utils.stringDate(1, 4, 2016));
 		int j = 10;
@@ -75,7 +77,7 @@ public class HtlmParse {
 		else
 			System.out.println("not yea");
 //		System.out.println(f2.toString());
-		java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(java.util.logging.Level.OFF);
+		java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(java.util.logging.Level.OFF);*/
 	}
 
 	public static void LaunchB(){

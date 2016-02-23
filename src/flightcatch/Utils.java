@@ -146,13 +146,14 @@ public class Utils {
 			return s;
 		else{
 			String ss[] = s.split("-");
-			String res = ss[0]+"-";
-			int i = Integer.parseInt(ss[1]);
+			String res;// = ss[0]+"-";
+			int i = Integer.parseInt(ss[0]);
 			i++;
 			if (i<10)
-				res+="0"+i;
+				res = "0"+i;
 			else
-				res+=i;
+				res= i+"";
+			res += "-"+ss[1];
 			return res;
 		}
 		
