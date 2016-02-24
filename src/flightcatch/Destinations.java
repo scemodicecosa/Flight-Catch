@@ -4,7 +4,7 @@ public class Destinations {
 	String min;
 	String max;
 	public final static String[] destinations = {"Dublino", "Berlino", "Amsterdam", "Parigi", "Barcellona", "Londra", 
-			"Milano", "Bruxelles", "Copenhagen", "Praga", "Oslo", "Los Angeles", "Istanbul", "New York", "Stoccolma", "Colonia"
+			"Milano","Eindhoven", "Bruxelles", "Copenhagen", "Praga", "Oslo", "Los Angeles", "Istanbul", "New York", "Stoccolma", "Colonia"
 	};
 	
 	public Destinations(String dest){
@@ -88,6 +88,7 @@ public class Destinations {
 		case "colonia":
 			min = "CGN,QKL";
 			break;
+		
 //		case "":
 //			min = "";
 //			break;

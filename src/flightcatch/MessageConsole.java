@@ -48,9 +48,9 @@ public class MessageConsole
 	 *  Redirect the output from the standard output to the console
 	 *  using the default text color and null PrintStream
 	 */
-	public void redirectOut()
+	public void redirectOut(Color c)
 	{
-		redirectOut(null, null);
+		redirectOut(c, null);
 	}
 
 	/*

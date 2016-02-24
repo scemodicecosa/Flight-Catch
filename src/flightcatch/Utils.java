@@ -214,4 +214,9 @@ public class Utils {
 				";t="+Destinations.getGoogleMin(arrive)+";d=2016-"+month+"-03;r=2016-"+month+"-07;tt=o";
 		return s;
 	}
+	public static String manualGoogleURL(String departure, String arrive, String month){
+		String s = "https://www.google.it/flights/#search;f="+departure+
+				";t="+arrive+";d=2016-"+month+"-03;r=2016-"+month+"-07;tt=o";
+		return s;
+	}
 }

@@ -253,7 +253,7 @@ public class WebBrowser extends JPanel {
 		return price;
 	}
 	
-	/******* Get price for more month ********/
+	/******* Get price for more months ********/
 	
 	public LinkedList<LinkedList> getGoogle(int howMany){
 		LinkedList <LinkedList> l = new LinkedList<>();
@@ -290,7 +290,7 @@ public class WebBrowser extends JPanel {
 		for (int i = 0; i<howMany;i++){
 			//PAUSA
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -299,6 +299,11 @@ public class WebBrowser extends JPanel {
 			while(browser.isLoading()){
 			}
 			LinkedList<Integer> price = getGooglePrice();
+			do{
+				price = getGooglePrice();
+			}
+			while(price.size()==0);
+			
 			l.add(price);
 			
 			//Next-Button
@@ -314,8 +319,8 @@ public class WebBrowser extends JPanel {
 		
 		
 		
-		System.out.println("[!] - JPanel "+p.getX()+" "+p.getY());
-		System.out.println("[!] - Mouse "+m.getX()+" "+m.getY());
+//		System.out.println("[!] - JPanel "+p.getX()+" "+p.getY());
+//		System.out.println("[!] - Mouse "+m.getX()+" "+m.getY());
 		
 		return l;
 	}
