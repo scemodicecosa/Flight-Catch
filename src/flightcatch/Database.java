@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 
+import org.apache.commons.lang3.text.WordUtils;
+
 public class Database {
 	
 	public static void insert(String departure, String arrive, int price, String date){
@@ -82,7 +84,7 @@ public class Database {
 				int price = rs.getInt("price");
 				String departure = rs.getString("departure");
 				String arrive = rs.getString("arrive");
-				ss[counter] = new Flight(departure,arrive,price,date);
+				ss[counter] = new Flight(WordUtils.capitalize(departure),WordUtils.capitalize(arrive),price,date);
 				counter++;
 				
 			}
@@ -173,7 +175,7 @@ public class Database {
 				int price = rs.getInt("price");
 				String departures = rs.getString("departure");
 				String arrives = rs.getString("arrive");
-				f[count] = new Flight(departures,arrives,price,dates);
+				f[count] = new Flight(WordUtils.capitalize(departures),WordUtils.capitalize(arrives),price,dates);
 				count++;
 				
 			}

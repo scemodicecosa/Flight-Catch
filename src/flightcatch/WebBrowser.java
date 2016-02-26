@@ -271,14 +271,14 @@ public class WebBrowser extends JPanel {
 		/******** Move mouse and click on the calendar *******/
 		Point p = url.getLocationOnScreen();
 		Point m = new Point();
-		m.setLocation(p.getX()+55, p.getY()+273);
+		m.setLocation(p.getX()+55, p.getY()+273); 
 		ela.get(0).click();
 		try {
 			Robot r = new Robot();
 			r.mouseMove((int) p.getX()+258, (int) p.getY()+193);
 			r.mousePress(InputEvent.BUTTON1_MASK);
 			r.mouseRelease(InputEvent.BUTTON1_MASK);
-			r.mouseMove((int) p.getX()+55, (int) p.getY()+273);
+			r.mouseMove((int) p.getX()+55, (int) p.getY()+273);///con cookie cambiare a 273 | 253 se senza cookie
 			r.mousePress(InputEvent.BUTTON1_MASK);
 			r.mouseRelease(InputEvent.BUTTON1_MASK);
 		} catch (AWTException e) {

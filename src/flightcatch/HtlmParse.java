@@ -6,6 +6,7 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -30,6 +31,7 @@ import com.teamdev.jxbrowser.chromium.events.ProvisionalLoadingEvent;
 import com.teamdev.jxbrowser.chromium.events.StartLoadingEvent;
 import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 
+import javax.print.attribute.standard.Destination;
 import javax.swing.*;
 import java.awt.*;
 
@@ -43,8 +45,38 @@ import org.jsoup.select.Elements;
 
 public class HtlmParse {
 	public static void main(String[] safsda){
-		Database.update("roma", "barcellona", 47, Utils.stringDate(1, 3, 2016));
-//		System.out.println(Calendar.month.values()[2]);
+//		Database.update("roma", "barcellona", 47, Utils.stringDate(1, 3, 2016));
+		Destinations d = new Destinations();
+		for (int i = 0; i<d.city.size();i++){
+			System.out.println(d.city.get(i)+" "+d.min.get(i));
+		}
+		int j = d.city.indexOf("Milano");
+		System.out.println(d.min.get(j));
+		
+		
+		for (int i = 0; i<d.destinations.length;i++){
+		try {
+			String city = d.destinations[i];
+			String min = Destinations.getGoogleMin(city);
+			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/flights","root","rotfl");
+			Statement st = conn.createStatement();
+			int rs = st.executeUpdate("");
+//			while(rs.next())
+//				rs.
+//			st.setString(1, city);
+//			st.setString(2, min);
+//			st.executeUpdate();
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		}
+		System.out.println("inserted!");
+		
+		
+		
+		
 //		Flight f = new Flight("londra", "roma", 34, "2016-01-02");
 //		String s = "londra -> roma, 35€, 2016-02-01";
 //		Flight f2 = new Flight(s);

@@ -1,5 +1,6 @@
 package flightcatch;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.jdesktop.swingx.*;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
@@ -48,11 +49,11 @@ public class Setting extends JPanel {
 				,"07","08","09","10","11","12"};
 	private JTextField from_man;
 	private JTextField to_man;
-	public JLabel lblFrom, lblTo;
-	public JCheckBox cbInsertManual;
+	public JLabel lblCity, lblIATA;
 	public MessageConsole mc;
 	public String[] months = {"Jan","Feb","Mar","Apr","May","Jun",
 			"Jul","Aug","Sep","Oct","Nov","Dec"};
+	public CheckBoxList list;
 
 	/**
 	 * Create the panel.
@@ -64,18 +65,20 @@ public class Setting extends JPanel {
 		setLayout(null);
 		setBounds(0, 0, 704, 700);
 		//		Browser browser = BrowserFactory.create();
-
-		cb = new JCheckBox[Destinations.destinations.length];
-		String [] cd = new String[cb.length];
+		Destinations d = new Destinations();
+		cb = new JCheckBox[d.city.size()];
+//		String [] cd = new String[cb.length];
 		for (int i = 0; i<cb.length; i++){
-			cb[i] = new JCheckBox(Destinations.destinations[i]);
-			cd[i] = Destinations.destinations[i];
+			cb[i] = new JCheckBox(d.city.get(i));
+//			System.out.println(d.getMin(d.city.get(i)));
+//			cd[i] = Destinations.destinations[i];
 		}
 
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(0, 43, 364, 438);
 		add(scrollPane);
-		CheckBoxList list = new CheckBoxList(cb);
+		list = new CheckBoxList(cb);
+		
 		scrollPane.setViewportView(list);
 
 		JLabel lblSelezionaUnaO = new JLabel("Seleziona una o più città da aggiornare");
@@ -118,16 +121,21 @@ public class Setting extends JPanel {
 
 				//Check if manual option is selected
 
-				if (cbInsertManual.isSelected()){
-					departure = from_man.getText();
-					arrive = to_man.getText();
-					for (int j = 0; j<2;j++){ 
-						wb.browser.loadURL(Utils.manualGoogleURL(departure, arrive, month));
 
+				//For every city check price
+
+				for(String sr: dest){
+					arrive = sr.toLowerCase();
+					departure = "roma";
+					for (int j = 0; j<2;j++){
+						
+						wb.browser.loadURL(Utils.manualGoogleURL(d.getMin(departure), d.getMin(arrive), month));
+//						arrive = arrive.toLowerCase();
+//						departure = departure.toLowerCase();
 						//Wait until it completely loads the page
 						while(wb.browser.isLoading()){
 						}
-
+						mc.redirectOut(Color.CYAN);
 						System.out.println("[!] - Page Loaded "+departure +"-"+arrive );
 						System.out.println("[!] - Start Grabbing Prices");
 						long start = System.currentTimeMillis();
@@ -135,26 +143,33 @@ public class Setting extends JPanel {
 						long end = System.currentTimeMillis();
 						System.out.println("[!] - Price Grabbed In " +(end-start)+"ms");
 						int m = monthBox.getSelectedIndex()+1;
+
+						//Iterate lists of prices from different month
+						
 						for (LinkedList<Integer> l :price){
-							System.out.println("[i] - Prices of " +months[m-1]);
+							mc.redirectOut(Color.RED);
+							System.out.println("[i] - Prices of "+months[m-1]);
 							int day = 1;
 							//							for (int i: l){
 							int max = Utils.howManyDays(m);
 							for(int i = 0;i<max;i++){
 								String date = Utils.stringDate(day,m,2016);
 								String log = "[!] - Price Not Changed";
+								mc.redirectOut(Color.WHITE);
 								int pr = l.get(i);
 								//if is not in database, add
 								if (!Database.isIN(departure, arrive, date)){
 									Database.insert(departure, arrive, pr, date);
 									//									System.out.println("[!] - First Insert Price");
 									log = "[!] - First Insert Price";
+									mc.redirectOut(Color.GREEN);
 								}
 								else{
 									//If different price, update
 									if (Database.getPrice(departure, arrive, date) != pr){
 										//										System.out.println("[!] - Update Price");
 										log = "[!] - Update Price";
+										mc.redirectOut(Color.YELLOW);
 										Database.update(departure, arrive, pr, date);
 									}
 
@@ -170,72 +185,9 @@ public class Setting extends JPanel {
 							departure = arrive;
 							arrive = temp;
 						}
+
 					}
-				}
-				else{
-					//For every city check price
 
-					for(String sr: dest){
-						arrive = sr.toLowerCase();
-						departure = "roma";
-						for (int j = 0; j<2;j++){ 
-							wb.browser.loadURL(Utils.createGoogleURL(departure, arrive, month));
-
-							//Wait until it completely loads the page
-							while(wb.browser.isLoading()){
-							}
-							mc.redirectOut(Color.CYAN);
-							System.out.println("[!] - Page Loaded "+departure +"-"+arrive );
-							System.out.println("[!] - Start Grabbing Prices");
-							long start = System.currentTimeMillis();
-							LinkedList<LinkedList> price = wb.getGoogle(ndayBox.getSelectedIndex()+1);//wb.getPrices(ndayBox.getSelectedIndex()+1 ,1);
-							long end = System.currentTimeMillis();
-							System.out.println("[!] - Price Grabbed In " +(end-start)+"ms");
-							int m = monthBox.getSelectedIndex()+1;
-
-							//Iterate lists of prices from different month
-							for (LinkedList<Integer> l :price){
-								mc.redirectOut(Color.RED);
-								System.out.println("[i] - Prices of "+months[m-1]);
-								int day = 1;
-								//							for (int i: l){
-								int max = Utils.howManyDays(m);
-								for(int i = 0;i<max;i++){
-									String date = Utils.stringDate(day,m,2016);
-									String log = "[!] - Price Not Changed";
-									mc.redirectOut(Color.WHITE);
-									int pr = l.get(i);
-									//if is not in database, add
-									if (!Database.isIN(departure, arrive, date)){
-										Database.insert(departure, arrive, pr, date);
-										//									System.out.println("[!] - First Insert Price");
-										log = "[!] - First Insert Price";
-										mc.redirectOut(Color.GREEN);
-									}
-									else{
-										//If different price, update
-										if (Database.getPrice(departure, arrive, date) != pr){
-											//										System.out.println("[!] - Update Price");
-											log = "[!] - Update Price";
-											mc.redirectOut(Color.YELLOW);
-											Database.update(departure, arrive, pr, date);
-										}
-
-									}
-									System.out.println(log+" of "+ date+" "+l.get(i)+ " €");
-									day++;
-								}
-								m++;
-							}
-							if (j==0){
-								//							j+= JOptionPane.showConfirmDialog(wb, "Vuoi scaricare il ritorno?");
-								String temp = departure;
-								departure = arrive;
-								arrive = temp;
-							}
-
-						}
-					}
 				}
 				//Ended
 
@@ -287,54 +239,48 @@ public class Setting extends JPanel {
 		mc.setMessageLines(10000);
 		System.out.println("prova");
 
-		cbInsertManual = new JCheckBox("Insert manual");
-		cbInsertManual.setBounds(372, 340, 129, 23);
-		cbInsertManual.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				if (cbInsertManual.isSelected()){
-					from_man.setVisible(true);
-					to_man.setVisible(true);
-					lblFrom.setVisible(true);
-					lblTo.setVisible(true);
-					System.out.println("casa è selezionati");
-				}
-				else{
-					System.out.println("non selezionato");
-					from_man.setVisible(false);
-					to_man.setVisible(false);
-					lblFrom.setVisible(false);
-					lblTo.setVisible(false);
-				}
-			}
-
-		});
-		add(cbInsertManual);
-
 		from_man = new JTextField();
-		from_man.setBounds(376, 388, 114, 30);
+		from_man.setBounds(376, 365, 114, 30);
 		add(from_man);
 		from_man.setColumns(10);
-		from_man.setVisible(false);
+		from_man.setVisible(true);
 
 		to_man = new JTextField();
-		to_man.setBounds(514, 388, 114, 30);
+		to_man.setBounds(496, 365, 114, 30);
 		add(to_man);
 		to_man.setColumns(10);
-		to_man.setVisible(false);
+		to_man.setVisible(true);
 
-		lblFrom = new JLabel("From");
-		lblFrom.setBounds(376, 371, 70, 15);
-		add(lblFrom);
-		lblFrom.setVisible(false);
+		lblCity = new JLabel("City");
+		lblCity.setBounds(376, 348, 70, 15);
+		add(lblCity);
+		lblCity.setVisible(true);
 
 
-		lblTo = new JLabel("To");
-		lblTo.setBounds(515, 371, 70, 15);
-		add(lblTo);
-		lblTo.setVisible(false);
+		lblIATA = new JLabel("IATA code");
+		lblIATA.setBounds(496, 348, 70, 15);
+		add(lblIATA);
+		
+		JButton btnAdd = new JButton("ADD");
+		btnAdd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				d.add(WordUtils.capitalize(from_man.getText()), to_man.getText().toUpperCase());
+				from_man.setText("");
+				to_man.setText("");
+				System.out.println("[!]- Airport added!");
+				System.out.println("[!]- Restart the application!");
+				/*cb = new JCheckBox[d.city.size()];
+				for (int i = 0; i<cb.length; i++){
+					cb[i] = new JCheckBox(d.city.get(i));
+				}
+				list = new CheckBoxList(cb);
+				list.repaint();*/
+				
+			}
+		});
+		btnAdd.setBounds(622, 365, 63, 28);
+		add(btnAdd);
+		lblIATA.setVisible(true);
 
 
 
