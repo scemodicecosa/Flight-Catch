@@ -106,7 +106,7 @@ public class Utils {
 	
 	public static String toUrlDate(String date){
 		String[] s = date.split("-");
-		String da = s[2].substring(2, 4)+s[1]+s[0];
+		String da = s[2]+"-"+s[1]+"-"+s[0];
 		return da;
 		
 	}
@@ -217,6 +217,12 @@ public class Utils {
 	public static String manualGoogleURL(String departure, String arrive, String month){
 		String s = "https://www.google.it/flights/#search;f="+departure+
 				";t="+arrive+";d=2016-"+month+"-03;r=2016-"+month+"-07;tt=o";
+		return s;
+	}
+	public static String singleGoogleURL(String departure, String arrive, String date){
+		date = toUrlDate(date);
+		String s = "https://www.google.it/flights/#search;f="+departure+
+				";t="+arrive+";d="+date+";r="+date+ ";tt=o";
 		return s;
 	}
 }

@@ -13,6 +13,8 @@ import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -33,6 +35,11 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
+import org.jdesktop.swingx.JXTable;
+import org.jdesktop.swingx.decorator.ColorHighlighter;
+import org.jdesktop.swingx.decorator.ComponentAdapter;
+import org.jdesktop.swingx.decorator.HighlightPredicate;
+import org.jdesktop.swingx.renderer.JRendererLabel;
 import org.jsoup.nodes.Element;
 
 import com.teamdev.jxbrowser.chromium.Browser;
@@ -78,15 +85,17 @@ public class Gui {
 //	private DefaultListModel<Flight> listModel;
 	private JComboBox<String> monthBox;
 	private JComboBox<String> dayBox;
-	public int min = 0;
+	public int min = 100000000;
 	private JTextField textField;
 	private JLabel lblHowLong;
 	private JCheckBox chckbxAr;
-	private JTable table;
+	private JXTable table;
 	private DefaultTableModel model;
 	public WebBrowser wb;
 	public JTabbedPane tabbedPane;
 	public Setting setting;
+	public Destinations d;
+//	public int min = 100000000;
 	//	private JButton btnSearch;
 	/**
 	 * Launch the application.
@@ -125,6 +134,7 @@ public class Gui {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		d = new Destinations();
 		String[] month = {"January","February","March","April","May","June",
 				"July","August","September","October","November","December"};   
 		String[] months = {"Jan","Feb","Mar","Apr","May","Jun",
@@ -208,7 +218,8 @@ public class Gui {
 				table.removeAll();
 				for (int i = model.getRowCount() -1; i >= 0;i--)
 					model.removeRow(i);
-//				tabbedPane.setSelectedIndex(2);
+				min = 19000000;
+						//						/				tabbedPane.setSelectedIndex(2);
 //				wb.browser.loadURL("it.wikipedia.org");
 			}
 		});
@@ -292,7 +303,9 @@ public class Gui {
 					if (dayBox.getSelectedItem().equals("Always")){
 						Flight[] s = Database.search(departure, arrive, date);
 						Price p = new Price(s);
-						min = p.getMin();
+						int temp = p.getMin(); 
+						if (temp<min)
+							min = temp;
 						for(Flight f:s){
 
 							model.addRow(f.getObject());
@@ -361,7 +374,7 @@ public class Gui {
 		model.addColumn("to");
 		model.addColumn("price");
 		model.addColumn("when");
-		table = new JTable(model);
+		table = new JXTable(model);
 		//		model.addRow(new Object[]{"roma","londra","35€","2016-01-12"});
 		//		model.addRow(new Object[]{"roma","londra","40€","2016-01-12"});
 		scrollPane.setViewportView(table);
@@ -397,6 +410,22 @@ public class Gui {
 		});
 		btnSwitch.setBounds(92, 33, 24, 26);
 		panel.add(btnSwitch);
+		HighlightPredicate hp = new HighlightPredicate(){
+			int n = 0;
+		
+			@Override
+			public boolean isHighlighted(Component arg0, ComponentAdapter arg1) {
+				// TODO Auto-generated method stub
+				String s = (String) model.getValueAt(arg1.row, 2);
+				int i = Integer.parseInt(s.substring(0, s.length()-2));
+//				System.out.println(s);
+				if (i==min) //&& arg1.column == 2)
+					return true;
+				return false;
+			}
+		};
+		ColorHighlighter c = new ColorHighlighter(hp, Color.GREEN, null);
+		table.addHighlighter(c);
 		table.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent evt) {
 				JTable list = (JTable)evt.getSource();
@@ -406,7 +435,7 @@ public class Gui {
 					String departure = (String) model.getValueAt(table.getSelectedRow(), 0);
 					String arrive = (String) model.getValueAt(table.getSelectedRow(), 1);
 					String date = (String) model.getValueAt(table.getSelectedRow(), 3);
-					String url = Utils.getSingleUrl(departure, arrive, date);
+					String url = Utils.singleGoogleURL(d.getMin(departure), d.getMin(arrive), date);
 					tabbedPane.setSelectedIndex(2);
 					wb.browser.loadURL(url);
 //					WebBrowser w = new WebBrowser(url);

@@ -237,7 +237,7 @@ public class Setting extends JPanel {
 		mc.redirectOut(Color.WHITE);
 		mc.redirectErr(Color.RED, null);
 		mc.setMessageLines(10000);
-		System.out.println("prova");
+//		System.out.println("prova");
 
 		from_man = new JTextField();
 		from_man.setBounds(376, 365, 114, 30);
