@@ -247,7 +247,7 @@ public class WebBrowser extends JPanel {
 		document = browser.getDocument();
 		List<DOMElement> el = document.findElements(By.className("AGUW54C-p-f"));
 		for (DOMElement e:el){
-			price.add(Integer.parseInt(e.getTextContent().substring(0, e.getTextContent().length() -2 )));
+			price.add(Integer.parseInt(e.getTextContent().replace(".", "").substring(0, e.getTextContent().length() -2 )));
 		}
 		
 		return price;

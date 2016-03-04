@@ -328,6 +328,36 @@ public class Database {
 		arr.toArray(s);
 		return s;
 	}
+	public static Flight[] searchARDifferent(String departure, String arrive, String from_return, String date, int days){
+		int min = 10000;
+		ArrayList<Flight> arr = new ArrayList<Flight>();
+		int temp_min, i = 0, k;
+		
+		Flight [] A = search(departure, arrive, date);
+		Flight [] R = search(from_return, departure, date);
+		Flight [] r_next = search(from_return, departure, Utils.nextMonth(date));
+		PriceAR p = new PriceAR(A, R, r_next, days);
+		A = p.getA();
+		R = p.getR();
+		for (i = 0; i<A.length;i++){
+			if (A[i] != null && R[i] != null){
+				temp_min = A[i].getPrice() +R[i].getPrice();
+				if (temp_min < min){
+					min = temp_min;
+					arr.clear();
+					arr.add(A[i]);
+					arr.add(R[i]);
+				}
+				else if (temp_min == min){
+					arr.add(A[i]);
+					arr.add(R[i]);
+				}
+			}
+		}
+		Flight[] s = new Flight[arr.size()];	
+		arr.toArray(s);
+		return s;
+	}
 	
 	
 	

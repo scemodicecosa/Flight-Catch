@@ -86,9 +86,9 @@ public class Gui {
 	private JComboBox<String> monthBox;
 	private JComboBox<String> dayBox;
 	public int min = 100000000;
-	private JTextField textField;
+	private JTextField textField, text_return;
 	private JLabel lblHowLong;
-	private JCheckBox chckbxAr;
+	private JCheckBox chckbxAr, chckbxRet;
 	private JXTable table;
 	private DefaultTableModel model;
 	public WebBrowser wb;
@@ -287,9 +287,15 @@ public class Gui {
 				}
 
 				if (chckbxAr.isSelected()){
+					Flight [] s;
+					if (chckbxRet.isSelected()){
+						s = Database.searchARDifferent(departure, arrive, text_return.getText(), date, Integer.parseInt(textField.getText()));
+					}
+					else {
 //					date = date.substring(3);
 					System.out.println(date);
-					Flight[] s = Database.searchAR(departure, arrive, date, Integer.parseInt(textField.getText()));
+					s = Database.searchAR(departure, arrive, date, Integer.parseInt(textField.getText()));
+					}
 					for(int i = 0; i<s.length;i++){
 						Object[] o = new Object[]{ s[i].getDeparture(),s[i].getArrive(),
 								s[i].getPrice()+" €", s[i].getDate()
@@ -338,14 +344,40 @@ public class Gui {
 		});
 
 		panel.add(btnSearch);
+		text_return = new JTextField();
+		text_return.setBounds(590,33, 100, 27);
+//		text_return.setVisible(false);
+//		panel.add(text_return);
+		
+		chckbxRet = new JCheckBox("");
+		chckbxRet.setBounds(565, 37, 42, 18);
+//		panel.add(chckbxRet);
+		chckbxRet.addItemListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				// TODO Auto-generated method stub
+				
+					if (chckbxRet.isSelected()){
+						panel.add(text_return);
+						window.repaint();
 
+					}
+					else{
+						panel.remove(text_return);
+						window.repaint();
+					}
 
+				}
+			});
+		
 		chckbxAr = new JCheckBox("A/R");
 		chckbxAr.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				if (chckbxAr.isSelected()){
 					panel.add(textField);
 					panel.add(lblHowLong);
+					panel.add(chckbxRet);
 					window.repaint();
 
 					System.out.println("Rimosso");
@@ -353,6 +385,7 @@ public class Gui {
 				else{
 					panel.remove(textField);
 					panel.remove(lblHowLong);
+					panel.remove(chckbxRet);
 					window.repaint();
 				}
 
