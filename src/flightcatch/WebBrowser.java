@@ -245,7 +245,7 @@ public class WebBrowser extends JPanel {
 	public LinkedList<Integer> getGooglePrice(){
 		LinkedList<Integer> price = new LinkedList<>();
 		document = browser.getDocument();
-		List<DOMElement> el = document.findElements(By.className("AGUW54C-p-f"));
+		List<DOMElement> el = document.findElements(By.className("CNAVQLC-p-f"));
 		for (DOMElement e:el){
 			price.add(Integer.parseInt(e.getTextContent().replace(".", "").substring(0, e.getTextContent().length() -2 )));
 		}
@@ -262,7 +262,7 @@ public class WebBrowser extends JPanel {
 		document = browser.getDocument();
 //		List<DOMElement> dom_el = document.findElements(By.className("AGUW54C-p-m datePickerNextButton AGUW54C-c-b"));
 		List<DOMElement> el = document.findElements(By.className("AGUW54C-I-d AGUW54C-I-o"));
-		List<DOMElement> ela = document.findElements(By.className("AGUW54C-I-n AGUW54C-zb-a"));
+		List<DOMElement> ela = document.findElements(By.className("CNAVQLC-H-q"));
 		
 //		dom_el.get(0).click();
 //		el.get(0).click();
@@ -308,7 +308,7 @@ public class WebBrowser extends JPanel {
 			
 			//Next-Button
 			document = browser.getDocument();
-			DOMElement dom_el = document.findElement(By.className("AGUW54C-p-m datePickerNextButton AGUW54C-c-b"));
+			DOMElement dom_el = document.findElement(By.className("CNAVQLC-p-m datePickerNextButton CNAVQLC-c-b"));
 			dom_el.click();
 //			dom_el.click();
 			

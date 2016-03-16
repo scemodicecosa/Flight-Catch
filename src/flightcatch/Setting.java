@@ -50,7 +50,7 @@ public class Setting extends JPanel {
 	private JTextField from_man;
 	private JTextField to_man;
 	public JLabel lblCity, lblIATA;
-	public MessageConsole mc;
+//	public MessageConsole mc;
 	public String[] months = {"Jan","Feb","Mar","Apr","May","Jun",
 			"Jul","Aug","Sep","Oct","Nov","Dec"};
 	public CheckBoxList list;
@@ -135,7 +135,7 @@ public class Setting extends JPanel {
 						//Wait until it completely loads the page
 						while(wb.browser.isLoading()){
 						}
-						mc.redirectOut(Color.CYAN);
+//						mc.redirectOut(Color.CYAN);
 						System.out.println("[!] - Page Loaded "+departure +"-"+arrive );
 						System.out.println("[!] - Start Grabbing Prices");
 						long start = System.currentTimeMillis();
@@ -147,7 +147,7 @@ public class Setting extends JPanel {
 						//Iterate lists of prices from different month
 						
 						for (LinkedList<Integer> l :price){
-							mc.redirectOut(Color.RED);
+//							mc.redirectOut(Color.RED);
 							System.out.println("[i] - Prices of "+months[m-1]);
 							int day = 1;
 							//							for (int i: l){
@@ -155,21 +155,21 @@ public class Setting extends JPanel {
 							for(int i = 0;i<max;i++){
 								String date = Utils.stringDate(day,m,2016);
 								String log = "[!] - Price Not Changed";
-								mc.redirectOut(Color.WHITE);
+//								mc.redirectOut(Color.WHITE);
 								int pr = l.get(i);
 								//if is not in database, add
 								if (!Database.isIN(departure, arrive, date)){
 									Database.insert(departure, arrive, pr, date);
 									//									System.out.println("[!] - First Insert Price");
 									log = "[!] - First Insert Price";
-									mc.redirectOut(Color.GREEN);
+//									mc.redirectOut(Color.GREEN);
 								}
 								else{
 									//If different price, update
 									if (Database.getPrice(departure, arrive, date) != pr){
 										//										System.out.println("[!] - Update Price");
 										log = "[!] - Update Price";
-										mc.redirectOut(Color.YELLOW);
+//										mc.redirectOut(Color.YELLOW);
 										Database.update(departure, arrive, pr, date);
 									}
 
@@ -192,7 +192,7 @@ public class Setting extends JPanel {
 				//Ended
 
 				tb.setSelectedIndex(1);
-				mc.redirectOut(Color.MAGENTA);
+//				mc.redirectOut(Color.MAGENTA);
 				System.out.println("[!] - Prices downloaded and inserted correctly!");
 			}
 		});
@@ -233,10 +233,10 @@ public class Setting extends JPanel {
 		console.setForeground(Color.WHITE);
 		//		textPane.setBackground(Color.red);
 
-		mc = new MessageConsole(console);
-		mc.redirectOut(Color.WHITE);
-		mc.redirectErr(Color.RED, null);
-		mc.setMessageLines(10000);
+//		mc = new MessageConsole(console);
+//		mc.redirectOut(Color.WHITE);
+//		mc.redirectErr(Color.RED, null);
+//		mc.setMessageLines(10000);
 //		System.out.println("prova");
 
 		from_man = new JTextField();
