@@ -156,13 +156,13 @@ public class Gui {
 		window.getContentPane().add(tabbedPane);
 		
 		JPanel panel = new JPanel();
-		wb = new WebBrowser();
+//		wb = new WebBrowser();
 		setting = new Setting(wb, tabbedPane);
 		DBViewer db = new DBViewer();
 		
 		tabbedPane.addTab("Search" ,panel);
 		tabbedPane.addTab("Settings",setting);
-		tabbedPane.addTab("Browser", wb);
+//		tabbedPane.addTab("Browser", wb);
 		tabbedPane.addTab("DBViewer", db);
 		
 		
