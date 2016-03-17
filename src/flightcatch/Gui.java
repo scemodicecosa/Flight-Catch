@@ -60,6 +60,7 @@ import javax.swing.JTextArea;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSpinner;
@@ -110,6 +111,10 @@ public class Gui {
 			public void run() {
 				try {
 					Gui window = new Gui();
+					JOptionPane.showMessageDialog(null, "Flight Catch uses JxBrowser http://www.teamdev.com/jxbrowser, which is\n "
+													  + "a proprietary software. The use of JxBrowser is governed by JxBrowser Product\n"
+													  + " Licence Agreement http://www.teamdev.com/jxbrowser-licence-agreement\n."
+													  + " If you would like to use JxBrowser in your development, please contact TeamDev.","Disclaimer",JOptionPane.INFORMATION_MESSAGE);
 					//					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -156,13 +161,13 @@ public class Gui {
 		window.getContentPane().add(tabbedPane);
 		
 		JPanel panel = new JPanel();
-		wb = new WebBrowser();
+//		wb = new WebBrowser();
 		setting = new Setting(wb, tabbedPane);
 		DBViewer db = new DBViewer();
 		
 		tabbedPane.addTab("Search" ,panel);
 		tabbedPane.addTab("Settings",setting);
-		tabbedPane.addTab("Browser", wb);
+//		tabbedPane.addTab("Browser", wb);
 		tabbedPane.addTab("DBViewer", db);
 		
 		
@@ -489,6 +494,7 @@ public class Gui {
 		//window.setSize(500, 500);
 		window.setVisible(true);
 		window.setLocationRelativeTo(null);
+		
 
 	}
 	
